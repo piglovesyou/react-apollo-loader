@@ -1,0 +1,43 @@
+{
+  "name": "graphql-codegen-loader",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@graphql-codegen/cli": "^1.9.1",
+    "@graphql-codegen/typescript-operations": "^1.9.1",
+    "@graphql-codegen/typescript-react-apollo": "^1.9.1",
+    "graphql": "^14.5.8"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.14",
+    "@types/webpack": "^4.41.0",
+    "@typescript-eslint/eslint-plugin": "^2.10.0",
+    "@typescript-eslint/parser": "^2.10.0",
+    "eslint": "^6.7.2",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-jest": "^23.1.1",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.5.0",
+    "typescript": "^3.7.3",
+    "webpack": "^4.41.2"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run fix",
+      "git add --force"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint --ext .ts --ext .tsx --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
+    "fix": "yarn run lint --fix",
+    "test": "tsc",
+    "build": "tsc"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
