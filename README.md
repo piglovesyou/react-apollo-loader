@@ -12,53 +12,65 @@ export defautl function(props: {}) {
 }
 ```
 
+[The blog post](https://dev.to/piglovesyou/react-apollo-loader-enhance-react-apollo-typescript-and-graphql-utilization-45h0)
+
 # Restrictions
 
 Make sure you
 
 * like [Apollo](https://www.apollographql.com/)
-* are willing to have the TypeScript types of your GraphQL response easily
+* use [Apollo Client](https://github.com/apollographql/apollo-client#readme) with [TypeScript](https://www.typescriptlang.org/)
 * have a valid GraphQL server
-* use [apollo-client](https://github.com/apollographql/apollo-client#readme) in [TypeScript](https://www.typescriptlang.org/)
-* write all your GraphQL documents in `.graphql` files, instead of `.tsx` ←This's going to be the preparation for setup
+* are willing to have **typed** GraphQL response
+* have all your GraphQL documents in `.graphql` files, instead of `.tsx` ←This's going to be the preparation for setup
 
 # Setup
 
-1. Add the line to your `.gitignore`
+1. Install react-apollo-loader
+
+```bash
+yarn add -D react-apollo-loader
+```
+
+2. Add the line to your `.gitignore`
     * react-apollo-loader will generate `.d.ts` right next to your `.graphql` GraphQL document files.
 
 ```diff
 +*.graphql.d.ts
 ```
 
-2. Make sure you have `schema.graphql` **OR** a GraphQL Server up and running. I recommend you to have `schema.graphql`
+3. Make sure you have `schema.graphql` **OR** a GraphQL Server up and running. I recommend you to have `schema.graphql`
 
-3. Setup the GraphQL document scanner in your `webpack.config.{js,ts}`. Note: 
+4. Setup the GraphQL document scanner in your `webpack.config.{js,ts}`. Note: 
     * Make sure you're including only GraphQL documents, not GraphQL Schema
     * The generated `.tsx` files still needs to be transpiled to `.js`
 
 <!--https://graphql-code-generator.com/docs/getting-started/documents-field#document-scanner-->
 
-```typescript
-const config: webpack.Configuration = {
-  module: {
-    rules: [
-      {
-        test: /\.graphql$/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-typescript'],
-            },
-          },
-          {
-            loader: 'graphql-codegen-loader',
-            options: {
-              schema: path.join(__dirname, 'schema.graphql'),
-            }
-          },
+```diff
+ const config: webpack.Configuration = {
+   module: {
+     rules: [
++      {
++        test: /\.graphql$/,
++        use: [
++          {
++            loader: 'babel-loader',
++            options: { presets: ['@babel/preset-typescript'] },
++          },
++          {
++            loader: 'graphql-codegen-loader',
++            options: {
++              schema: path.join(__dirname, 'schema.graphql'),
++            }
++          },
++        ],
++      }
 ```
+
+# Options
+
+The loader options are the same structure of [GraphQL Codegen config](https://graphql-code-generator.com/docs/getting-started/codegen-config), except [some of properties are fixed](https://github.com/piglovesyou/react-apollo-loader/blob/master/src/index.ts#L40-L51).
 
 # License
 
