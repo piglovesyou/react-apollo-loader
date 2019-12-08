@@ -44,7 +44,8 @@
     "lint": "eslint --ext .ts --ext .tsx --ignore-path .gitignore --ignore-pattern \"!**/.*\" .",
     "fix": "yarn run lint --fix",
     "test": "tsc",
-    "build": "tsc"
+    "build": "tsc",
+    "prepack": "yarn run build"
   },
   "husky": {
     "hooks": {
