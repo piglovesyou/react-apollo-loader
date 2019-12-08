@@ -1,8 +1,10 @@
 {
   "name": "react-apollo-loader",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@graphql-codegen/cli": "^1.9.1",
     "@graphql-codegen/typescript-operations": "^1.9.1",
