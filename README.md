@@ -24,7 +24,8 @@ Make sure you
 
 # Setup
 
-1. Add the line to your `.gitignore`. graphql-codegen-loader will generate `.d.ts` right next to your `.graphql` GraphQL document files.
+1. Add the line to your `.gitignore`
+    * react-apollo-loader will generate `.d.ts` right next to your `.graphql` GraphQL document files.
 
 ```diff
 +*.graphql.d.ts
@@ -33,22 +34,30 @@ Make sure you
 2. Make sure you have `schema.graphql` **OR** a GraphQL Server up and running. I recommend you to have `schema.graphql`
 
 3. Setup the GraphQL document scanner in your `webpack.config.{js,ts}`. Note: 
-    * Make sure you're including only GraphQL documents, not GraphQL Schema.
-    * The generated `.tsx` files still needs to be transpiled by such as `ts-loader` or `babel-loader` to generate `.js`.
+    * Make sure you're including only GraphQL documents, not GraphQL Schema
+    * The generated `.tsx` files still needs to be transpiled to `.js`
 
 <!--https://graphql-code-generator.com/docs/getting-started/documents-field#document-scanner-->
 
 ```typescript
-const config: webpack.Config = {
+const config: webpack.Configuration = {
   module: {
     rules: [
       {
         test: /\.graphql$/,
         use: [
-          { loader: 'babel-loader', options: { presets: ['@babel/preset-typescript'] } },
-          { loader: 'graphql-codegen-loader' },
-        ]
-      },
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-typescript'],
+            },
+          },
+          {
+            loader: 'graphql-codegen-loader',
+            options: {
+              schema: path.join(__dirname, 'schema.graphql'),
+            }
+          },
 ```
 
 # License
@@ -57,5 +66,4 @@ MIT
 
 # TODO
 
-- [ ] Make the `generate()` of GraphQL Code Generator configurable 
 - [ ] Write test

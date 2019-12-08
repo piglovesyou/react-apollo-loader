@@ -1,85 +1,60 @@
 import { loader } from 'webpack';
-import { createCompilerHost, createProgram, CompilerOptions } from "typescript";
-import { promises as fsPromises } from "fs";
+import { promises as fsPromises, mkdirSync } from "fs";
+import { getOptions } from 'loader-utils';
 import path from "path";
 import { generate } from "@graphql-codegen/cli";
+import genDts from "./gen-dts";
+import merge from 'lodash.merge';
 
+import mkdirp from "mkdirp";
 const { writeFile } = fsPromises;
 
-const options: CompilerOptions = {
-  declaration: true,
-  emitDeclarationOnly: true,
-};
-
-function generateDts(inputFileName: string): string {
-  let outputText: string;
-  const compilerHost = createCompilerHost({});
-  compilerHost.writeFile = (name /*: string */, text /*: string */) => {
-    // debugger
-    outputText = text;
-  };
-
-  const program = createProgram([ inputFileName ], options, compilerHost);
-  program.emit(
-      // /* sourceFile */ undefined,
-      // /* writeFileCallback */ undefined,
-      // /* cancellationToken */ undefined,
-      // /* emitOnlyDtsFiles */ true,
-      // /* transformers */ undefined,
-      // /* forceDtsEmit */ true,
-  );
-
-  return outputText!; // !;
-}
+const libDir = path.resolve(__dirname, '..');
+const tsxBaseDir = path.join(libDir, '__generated__');
+mkdirp.sync(tsxBaseDir);
 
 const graphlqCodegenLoader = async function (this: loader.LoaderContext, gqlContent: string) {
+  const options = getOptions(this);
   const callback = this.async()!;
 
-  const { resourcePath, rootContext } = this;
+  const { resourcePath: gqlFullPath, rootContext: userDir } = this;
 
-  const userDir = rootContext;
-  const tsxBaseDir = path.join(userDir, '__generated__');
-// TODO: mkdir
-  const schemaPath = path.join(userDir, './schema.graphql');
-  console.log(schemaPath);
-
-  const gqlRelPath = path.relative(userDir, resourcePath);
-  const gqlRelDir = path.dirname(gqlRelPath);
-  const tsxBaseName = path.basename(gqlRelPath, '.graphql');
-  const tsxRelPath = path.join(gqlRelDir, `${ tsxBaseName }.tsx`);
+  const gqlRelPath = path.relative(userDir, gqlFullPath);
+  const tsxRelPath = gqlRelPath +  `.tsx`;
   const tsxFullPath = path.join(tsxBaseDir, tsxRelPath);
-  const dtsFullPath = `${ resourcePath }.d.ts`;
+  const dtsFullPath = `${ gqlFullPath }.d.ts`;
 
-  console.log(resourcePath);
-  this.resourcePath = `${ resourcePath }.tsx`; // Pretend tsx for later loaders
+  // Pretend .tsx for later loaders.
+  // babel-loader at least doesn't respond the .graphql extension.
+  this.resourcePath = `${ gqlFullPath }.tsx`;
 
   const [ { content: tsxContent } ] = await generate(
-      {
-        schema: schemaPath,
-        documents: gqlContent,
-        generates: {
-          [tsxFullPath]: {
-            plugins: [
-              'typescript',
-              'typescript-operations',
-              'typescript-react-apollo',
-            ],
+      merge(
+          {
             config: {
-              // withHOC: false,
-              withHooks: true,
+              // withHOC: false,  // True by default
+              withHooks: true,    // False by default
             },
           },
-        },
-      },
+          options,
+          {
+            documents: gqlContent,
+            generates: {
+              [tsxFullPath]: {
+                plugins: [
+                  'typescript',
+                  'typescript-operations',
+                  'typescript-react-apollo',
+                ],
+              },
+            },
+          }
+      ) ,
       true,
   );
 
-  // debugger
-  const dtsContent = await generateDts(tsxFullPath);
-
+  const dtsContent = await genDts(tsxFullPath);
   await writeFile(dtsFullPath, dtsContent);
-
-  // console.log(dtsContent);
   callback(undefined, tsxContent);
 };
 

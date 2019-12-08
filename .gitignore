@@ -1,4 +1,5 @@
 node_modules/
+__generated__
 
 # Logs
 npm-debug.log*
@@ -16,3 +17,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 dist
+
+# Not lock yet
+yarn.lock
+package-lock.json
