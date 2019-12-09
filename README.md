@@ -43,7 +43,7 @@ yarn add -D react-apollo-loader
 
 4. Setup the GraphQL document scanner in your `webpack.config.{js,ts}`. Note: 
     * Make sure you're including only GraphQL documents, not GraphQL Schema
-    * The generated `.tsx` files still needs to be transpiled to `.js`
+    * The generated `.tsx` content still needs to be transpiled to `.js`
 
 <!--https://graphql-code-generator.com/docs/getting-started/documents-field#document-scanner-->
 
