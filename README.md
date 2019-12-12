@@ -79,3 +79,5 @@ MIT
 # TODO
 
 - [ ] Write test
+- [ ] Use `@graphql-codegen/core`, not `/cli`
+- [ ] Lazy load GraphQL schema when a url is specified and not ready (SSR)
