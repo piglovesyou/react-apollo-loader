@@ -3,6 +3,7 @@ import { createCompilerHost, createProgram, CompilerOptions } from "typescript";
 const options: CompilerOptions = {
   declaration: true,
   emitDeclarationOnly: true,
+  skipLibCheck: false,
 };
 
 export default function genDts(inputFileName: string): string {
