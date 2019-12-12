@@ -1,6 +1,6 @@
 {
   "name": "react-apollo-loader",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "main": "dist/index.js",
   "files": [
     "dist"
