@@ -2,10 +2,11 @@
 
 A webpack loader to make those who use [React Apollo](https://github.com/apollographql/react-apollo#readme) and [GraphQL Code Generator](https://graphql-code-generator.com/) _happier_. You can do:
 
-```typescript
+```typescript jsx
 import { useMyQuery } from './myQuery.graphql';
 
-export defautl function(props: {}) {
+export default function(props: {}) {
+  // The data is typed⚡️
   const { data, loading } = useMyQuery();
   
   return loading ? <div>loading</div> : <div>{data!.myQuery.text}</div>;
@@ -18,11 +19,12 @@ export defautl function(props: {}) {
 
 Make sure you
 
-* like [Apollo](https://www.apollographql.com/)
-* use [Apollo Client](https://github.com/apollographql/apollo-client#readme) with [TypeScript](https://www.typescriptlang.org/)
+* use [Apollo Client](https://github.com/apollographql/apollo-client#readme)
+* use [TypeScript](https://www.typescriptlang.org/)
 * have a valid GraphQL server
 * are willing to have **typed** GraphQL response
-* have all your GraphQL documents in `.graphql` files, instead of `.tsx` ←This's going to be the preparation for setup
+* have all your GraphQL documents in `.graphql` files, not in `.tsx`
+    * This's going to be the preparation for the setup
 
 # Setup
 
@@ -33,17 +35,25 @@ yarn add -D react-apollo-loader
 ```
 
 2. Add the line to your `.gitignore`
-    * react-apollo-loader will generate `.d.ts` right next to your `.graphql` GraphQL document files.
+
+react-apollo-loader will generate `.d.ts` right next to your `.graphql` GraphQL document files.
 
 ```diff
+# .gitignore
 +*.graphql.d.ts
 ```
 
-3. Make sure you have `schema.graphql` **OR** a GraphQL Server up and running. I recommend you to have `schema.graphql`
+3. Make sure your GraphQL schema is able to get by [this syntax](https://github.com/ardatan/graphql-toolkit#schema-loading).
+
+* If you have an isolated GraphQL Server, you can specify the URL endpoint, like `https://yoursite.com/graphql`.
+* Another recommended way is to specify a glob like `**/*.graphqls`. `.graphqls` is the extension that
+[graphql-toolkit recognizes as GraphQL schema files](https://github.com/ardatan/graphql-toolkit/blob/d29e518a655c02e3e14377c8c7d3de61f08e6200/packages/loaders/graphql-file/src/index.ts#L9).
+Note **you cannot use the same extension of GrahpQL documents**, these are different.
+    * In this case, you would also want to load `.graphqls` by `graphql-tag/loader` to build executable schema. Set it up in your webpack.config.
 
 4. Setup the GraphQL document scanner in your `webpack.config.{js,ts}`. Note: 
-    * Make sure you're including only GraphQL documents, not GraphQL Schema
-    * The generated `.tsx` content still needs to be transpiled to `.js`
+    * Make sure you're including only GraphQL documents, not GraphQL schema
+    * The generated `.tsx` content still needs to be transpiled to `.js` so let Babel do that.
 
 <!--https://graphql-code-generator.com/docs/getting-started/documents-field#document-scanner-->
 
@@ -70,7 +80,14 @@ yarn add -D react-apollo-loader
 
 # Options
 
-The loader options are the same structure of [GraphQL Codegen config](https://graphql-code-generator.com/docs/getting-started/codegen-config), except [some of properties are fixed](https://github.com/piglovesyou/react-apollo-loader/blob/master/src/index.ts#L40-L51).
+The required property is `schema`, where you can specify:
+
+* URL `https://yoursite.com/graphql`
+* JSON introspectino schema `schema.json`
+* Schema file `schema.graphqls` or the glob `**/*.graphqls` 
+
+[Some of the other options are available](https://github.com/dotansimha/graphql-code-generator/blob/27c0e142de6bed63402b5ef42788e84aee757f1f/packages/utils/plugins-helpers/src/types.ts#L4-L15),
+but note still some of the options are overwritten by react-apollo-loader.
 
 # License
 
@@ -79,5 +96,4 @@ MIT
 # TODO
 
 - [ ] Write test
-- [ ] Use `@graphql-codegen/core`, not `/cli`
-- [ ] Lazy load GraphQL schema when a url is specified and not ready (SSR)
+- [ ] Write [webpack loader option schema](https://webpack.js.org/contribute/writing-a-loader/#loader-utilities)
