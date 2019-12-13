@@ -1,6 +1,7 @@
 import { promises as fsPromises } from "fs";
 import { loader } from 'webpack';
-import mkdirp from "mkdirp";
+import { promisify } from "util";
+import { default as _mkdirp } from "mkdirp";
 import { getOptions } from 'loader-utils';
 import path from 'path';
 import { codegen } from "@graphql-codegen/core";
@@ -9,12 +10,12 @@ import * as typescriptOperationsPlugin from '@graphql-codegen/typescript-operati
 import * as typescriptReactApolloPlugin from '@graphql-codegen/typescript-react-apollo';
 import genDts from "./gen-dts";
 import { DocumentNode, GraphQLSchema, parse, printSchema } from "graphql";
-import {loadSchema} from "graphql-toolkit";
+import { loadSchema } from "graphql-toolkit";
 
 const { writeFile } = fsPromises;
+const mkdirp = promisify(_mkdirp);
 const libDir = path.resolve(__dirname, '..');
 const tsxBaseDir = path.join(libDir, '__generated__');
-mkdirp.sync(tsxBaseDir);
 
 const defaultCodegenConfig = {
   config: {
@@ -48,7 +49,6 @@ const graphlqCodegenLoader = async function (this: loader.LoaderContext, gqlCont
   // babel-loader at least doesn't respond the .graphql extension.
   this.resourcePath = `${ gqlFullPath }.tsx`;
 
-  // TODO: Memoize
   const loadedSchema: GraphQLSchema = await loadSchema(options.schema);
   const schema: DocumentNode = parse(printSchema(loadedSchema));
 
@@ -65,7 +65,8 @@ const graphlqCodegenLoader = async function (this: loader.LoaderContext, gqlCont
     ],
   };
   const tsxContent = await codegen(codegenConfig);
-
+  await mkdirp(path.dirname(tsxFullPath));
+  await writeFile(tsxFullPath, tsxContent);
   const dtsContent = await genDts(tsxFullPath);
   await writeFile(dtsFullPath, dtsContent);
   callback(undefined, tsxContent);
