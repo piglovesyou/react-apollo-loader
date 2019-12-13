@@ -26,6 +26,11 @@ Make sure you
 * have all your GraphQL documents in `.graphql` files, not in `.tsx`
     * This's going to be the preparation for the setup
 
+# Examples
+
+* [Next.js TypeScript + Apollo Example](https://github.com/piglovesyou/next-example-typescript-apollo#readme)
+* [Example based on React Starter Kit](https://github.com/piglovesyou/react-apollo-loader-example#readme)
+
 # Setup
 
 1. Install react-apollo-loader
