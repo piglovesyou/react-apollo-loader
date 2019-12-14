@@ -49,6 +49,7 @@ const graphlqCodegenLoader = async function (this: loader.LoaderContext, gqlCont
   // babel-loader at least doesn't respond the .graphql extension.
   this.resourcePath = `${ gqlFullPath }.tsx`;
 
+  // TODO: Memoize building schema
   const loadedSchema: GraphQLSchema = await loadSchema(options.schema);
   const schema: DocumentNode = parse(printSchema(loadedSchema));
 
@@ -64,6 +65,7 @@ const graphlqCodegenLoader = async function (this: loader.LoaderContext, gqlCont
       }
     ],
   };
+  // TODO: Better error logs
   const tsxContent = await codegen(codegenConfig);
   await mkdirp(path.dirname(tsxFullPath));
   await writeFile(tsxFullPath, tsxContent);
