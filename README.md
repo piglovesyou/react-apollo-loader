@@ -1,3 +1,7 @@
+Archived. Please use [graphql-let](https://github.com/piglovesyou/graphql-let#readme) instead.
+
+----
+
 # react-apollo-loader
 
 A webpack loader to make those who use [React Apollo](https://github.com/apollographql/react-apollo#readme) and [GraphQL Code Generator](https://graphql-code-generator.com/) _happier_. You can do:
